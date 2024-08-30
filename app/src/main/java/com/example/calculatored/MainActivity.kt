@@ -11,7 +11,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var display: TextView
     private var operator: String = ""
     private var firstValue: String = ""
-    private var secondValue: String = ""
     private var isOperatorSelected: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -57,63 +56,46 @@ class MainActivity : AppCompatActivity() {
                 sequenceView.text = "" // Clear the sequence as well
             }
             "±", "%", "÷", "x", "-", "+", "." -> {
-                updateSequence(buttonText)
                 handleOperator(buttonText)
             }
             "=" -> calculateResult()
             else -> {
                 updateSequence(buttonText)
                 appendNumber(buttonText)
+                enableOperators()
             }
         }
     }
+
     private fun updateSequence(input: String) {
         sequenceView.append(input)
     }
-
-
 
     private fun clear() {
         display.text = "0"
         operator = ""
         firstValue = ""
-        secondValue = ""
         isOperatorSelected = false
-    }
-
-    private fun toggleSign() {
-        val currentValue = display.text.toString()
-        if (currentValue != "0") {
-            display.text = if (currentValue.startsWith("-")) {
-                currentValue.substring(1)
-            } else {
-                "-$currentValue"
-            }
-        }
-    }
-
-    private fun applyPercentage() {
-        val currentValue = display.text.toString().toDouble() / 100
-        display.text = currentValue.toString()
+        enableOperators()
     }
 
     private fun handleOperator(op: String) {
         if (isOperatorSelected) {
-            secondValue = display.text.toString()
-            calculateResult()
+            // Update the operator in the sequence view and operator variable
+            sequenceView.text = sequenceView.text.toString().dropLast(1) + op
             operator = op
-            isOperatorSelected = true
-            firstValue = display.text.toString()
         } else {
             firstValue = display.text.toString()
             operator = op
             isOperatorSelected = true
+            updateSequence(op)
+            disableOperators()
         }
     }
 
     private fun calculateResult() {
         if (firstValue.isNotEmpty() && operator.isNotEmpty()) {
-            secondValue = display.text.toString()
+            val secondValue = display.text.toString()
 
             val result = when (operator) {
                 "+" -> firstValue.toDouble() + secondValue.toDouble()
@@ -132,11 +114,7 @@ class MainActivity : AppCompatActivity() {
 
             operator = ""
             isOperatorSelected = false
-        }
-    }
-    private fun appendDecimal() {
-        if (!display.text.contains(".")) {
-            display.append(".")
+            enableOperators()
         }
     }
 
@@ -149,4 +127,23 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun enableOperators() {
+        findViewById<Button>(R.id.plusMinus).isEnabled = true
+        findViewById<Button>(R.id.modulo).isEnabled = true
+        findViewById<Button>(R.id.divide).isEnabled = true
+        findViewById<Button>(R.id.times).isEnabled = true
+        findViewById<Button>(R.id.minus).isEnabled = true
+        findViewById<Button>(R.id.plus).isEnabled = true
+        findViewById<Button>(R.id.equal).isEnabled = true
+    }
+
+    private fun disableOperators() {
+        findViewById<Button>(R.id.plusMinus).isEnabled = false
+        findViewById<Button>(R.id.modulo).isEnabled = false
+        findViewById<Button>(R.id.divide).isEnabled = false
+        findViewById<Button>(R.id.times).isEnabled = false
+        findViewById<Button>(R.id.minus).isEnabled = false
+        findViewById<Button>(R.id.plus).isEnabled = false
+        findViewById<Button>(R.id.equal).isEnabled = false
+    }
 }
