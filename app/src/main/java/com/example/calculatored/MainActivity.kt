@@ -85,13 +85,20 @@ class MainActivity : AppCompatActivity() {
             sequenceView.text = sequenceView.text.toString().dropLast(1) + op
             operator = op
         } else {
-            firstValue = display.text.toString()
+            if (firstValue.isEmpty()) {
+                firstValue = display.text.toString()
+            } else {
+                // Calculate the current result before updating the operator
+                calculateResult()
+                firstValue = display.text.toString()
+            }
             operator = op
             isOperatorSelected = true
             updateSequence(op)
             disableOperators()
         }
     }
+
 
     private fun calculateResult() {
         if (firstValue.isNotEmpty() && operator.isNotEmpty()) {
